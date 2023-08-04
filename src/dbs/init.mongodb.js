@@ -13,10 +13,10 @@ class Database {
   }
   
   connect(type = 'mongodb') {
-    if (type ==='mongodb') {
-      mongoose.set('debug', true);
-      mongoose.set('debug', { color: true });
-    }
+    // if (type ==='mongodb') {
+    //   mongoose.set('debug', true);
+    //   mongoose.set('debug', { color: true });
+    // }
     
     let connectString = '';
     if (process.env.MONGODB_CONNECT_TYPE && process.env.MONGODB_CONNECT_TYPE === 'atlas') {
