@@ -1,9 +1,9 @@
-'use strict';
-const { model, Schema, Types } = require('mongoose');
+'use strict'
+const { model, Schema, Types } = require('mongoose')
 
 
-const COLLECTION_NAME = 'Shops';
-const DOCUMENT_NAME = 'Shop';
+const COLLECTION_NAME = 'Shops'
+const DOCUMENT_NAME = 'Shop'
 
 // Declare the Schema of the Mongo model
 const shopSchema = new Schema({
@@ -40,7 +40,7 @@ const shopSchema = new Schema({
 }, {
   timestamps: true,
   collection: COLLECTION_NAME
-});
+})
 
 //Export the model
-module.exports = model(DOCUMENT_NAME, shopSchema);
+module.exports = model(DOCUMENT_NAME, shopSchema)

@@ -1,9 +1,9 @@
-'use strict';
+'use strict'
 const { Schema, mongoose } = require('mongoose')
 
 
-const COLLECTION_NAME = 'Keys';
-const DOCUMENT_NAME = 'Key';
+const COLLECTION_NAME = 'Keys'
+const DOCUMENT_NAME = 'Key'
 
 const keyTokenSchema = new Schema({
   user: {
@@ -22,6 +22,6 @@ const keyTokenSchema = new Schema({
 }, {
   collection: COLLECTION_NAME,
   timeseries: true
-});
+})
 
-module.exports = mongoose.model(DOCUMENT_NAME, keyTokenSchema);
+module.exports = mongoose.model(DOCUMENT_NAME, keyTokenSchema)

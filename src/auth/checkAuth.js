@@ -1,6 +1,7 @@
-'use strict';
+'use strict'
 
-const { findKey } = require("../services/apikey.service");
+const { InternalServerErrorRequestResponse, ForbiddenRequestErrorResponse } = require("../core/error.response")
+const { findKey } = require("../services/apikey.service")
 
 
 const HEADER = {
@@ -10,51 +11,41 @@ const HEADER = {
 
 const apiKey = async (req, res, next) => {
   try {
-    const key = req.headers['x-api-key']?.toString();
-    if (!key) {
-      return res.status(403).json({
-        message: 'Forbidden Error'
-      })
-    }
+    const key = req.headers['x-api-key']?.toString()
+    if (!key) throw new ForbiddenRequestErrorResponse('Forbidden')
 
     //Check key
-    const objKey = await findKey(key);
-    console.log(objKey);
-    if (!objKey) {
-      return res.status(403).json({
-        message: 'Forbidden Error'
-      })
-    }
-    req.objKey = objKey;
-    return next();
+    const objKey = await findKey(key)
+    // console.log(objKey)
+    if (!objKey) throw new ForbiddenRequestErrorResponse('Forbidden')
+
+    req.objKey = objKey
+    return next()
 
   } catch (error) {
-    console.log(error.message);
-    return res.status(500).json({
-      message: 'Server Error'
-    })
+    console.log(error.message)
+    throw new InternalServerErrorRequestResponse('Internal Server Error')
   }
-};
+}
 
 const permission = (permission) => {
   return (req, res, next) => {
-    if (!req.objKey.permissions) {
-      return res.status(403).json({
-        message: 'Permission dinied'
-      })
-    }
+    if (!req.objKey.permissions) throw new ForbiddenRequestErrorResponse('Forbidden')
 
-    const validPermission = req.objKey.permissions.includes(permission);
-    if (!validPermission) {
-      return res.status(403).json({
-        message: 'Permission dinied'
-      })
-    }
-    return next();
-  };
+    const validPermission = req.objKey.permissions.includes(permission)
+    if (!validPermission) throw new ForbiddenRequestErrorResponse('Forbidden')
+    return next()
+  }
 }
 
+
+const asyncHandler = fn => {
+  return (req, res, next) => {
+    fn(req, res, next).catch(next);
+  }
+}
 module.exports = {
   apiKey,
-  permission
+  permission,
+  asyncHandler
 }

@@ -1,5 +1,5 @@
-'use strict';
-require('dotenv').config();
+'use strict'
+require('dotenv').config()
 
 const dev = {
   app: {
@@ -24,7 +24,7 @@ const prod = {
   }
 }
 
-const environment = process.env.NODE_ENV || 'dev';
-const config = { dev, prod };
+const environment = process.env.NODE_ENV || 'dev'
+const config = { dev, prod }
 
-module.exports = config[environment];
+module.exports = config[environment]

@@ -1,17 +1,13 @@
-'use strict';
-const shopServices = require('../services/shop.service');
+'use strict'
+const shopServices = require('../services/shop.service')
 class AccessController {
 
   constructor() {
   }
 
   signUp = async (req, res, next) => {
-    try {
-      return res.status(201).json(await shopServices.signUp(req.body));
-    } catch (error) {
-      next(error);
-    }
+      return res.status(201).json(await shopServices.signUp(req.body))
   }
 }
 
-module.exports = new AccessController();
+module.exports = new AccessController()
