@@ -1,5 +1,5 @@
 'use strict'
-const { model, Schema } = required('mongoose')
+const { model, Schema } = require('mongoose')
 
 
 const COLLECTION_NAME = 'Products'
@@ -72,6 +72,9 @@ const electronicSchema = new Schema({
   color: {
     type: String,
   }
+}, {
+  collection: 'Electronics',
+  timestamps: true
 })
 
 module.exports = {

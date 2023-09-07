@@ -1,7 +1,7 @@
 'use strict';
 
 const { BadRequestRequestErrorResponse, InternalServerErrorRequestResponse } = require('../core/error.response');
-const { product, clothing, electronic } = require('../models/product.model')
+const { product, clother, electronic } = require('../models/product.model')
 
 class ProductFactory {
 
@@ -54,8 +54,9 @@ class Product {
     this.product_price = product_price
   }
 
+  //create new product
   async createProduct() {
-    return await ProductFactory.createProduct(this)
+    return await product.create(this)
   }
 }
 
@@ -63,7 +64,7 @@ class Product {
 //define sub-class for product clothing field
 class Clothing extends Product {
   async createProduct() {
-    const newClothing = await clothing.create(this.product_attributes)
+    const newClothing = await clother.create(this.product_attributes)
     if (!newClothing) throw new InternalServerErrorRequestResponse('Something went wrong ! Please try again.')
 
     const newProduct = await super.createProduct()

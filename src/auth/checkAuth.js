@@ -11,6 +11,7 @@ const apiKey = async (req, res, next) => {
     const key = req.headers[HEADER.APIKEY]?.toString()
     if (!key) {
       return res.status(403).json({
+        statusCode: 403,
         message: 'Forbidden'
       })
     }
@@ -20,6 +21,7 @@ const apiKey = async (req, res, next) => {
     // console.log(objKey)
     if (!objKey) {
       return res.status(403).json({
+        statusCode: 403,
         message: 'Forbidden'
       })
     }
@@ -32,6 +34,7 @@ const permission = (permission) => {
   return (req, res, next) => {
     if (!req.objKey.permissions) {
       return res.status(403).json({
+        statusCode: 403,
         message: 'Permission denied'
       })
     }
@@ -39,6 +42,7 @@ const permission = (permission) => {
     const validPermission = req.objKey.permissions.includes(permission)
     if (!validPermission) {
       return res.status(403).json({
+        statusCode: 403,
         message: 'Permission denied'
       })
     }
