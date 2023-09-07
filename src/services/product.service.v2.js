@@ -1,7 +1,7 @@
 'use strict';
 
 const { BadRequestRequestErrorResponse, InternalServerErrorRequestResponse } = require('../core/error.response');
-const { product, clother, electronic } = require('../models/product.model')
+const { product, clothing, electronic, cosmetic } = require('../models/product.model')
 
 class ProductFactory {
 
@@ -9,16 +9,17 @@ class ProductFactory {
       type: 'String',
       payload
     */
-  static createProduct = async (type, payload) => {
-    switch (type) {
-      case 'Electronic':
-        return new Electronic(payload).createProduct();
-      case 'Clothing':
-        return new Clothing(payload).createProduct();
-      default:
-        throw new BadRequestRequestErrorResponse(`Invalid product type: ${type}`)
-    }
-  }
+      static productRegistry = {}; //key-class
+
+      static registerProductType( type, classRef ) {
+        ProductFactory.productRegistry[type] = classRef
+      }
+
+      static createProduct ( type, payload ) {
+        const productClass = ProductFactory.productRegistry[type] 
+        if (!productClass) throw new BadRequestRequestErrorResponse(`Invalid product type: ${type}`)
+        return new productClass(payload).createProduct()
+      }
 }
 
 
@@ -64,7 +65,7 @@ class Product {
 //define sub-class for product clothing field
 class Clothing extends Product {
   async createProduct() {
-    const newClothing = await clother.create({
+    const newClothing = await clothing.create({
       ...this.product_attributes,
       product_shop: this.product_shop
     })
@@ -79,7 +80,7 @@ class Clothing extends Product {
 
 //define sub-class for product electronic field
 class Electronic extends Product {
-  async  createProduct() {
+  async createProduct() {
     const newElectronic = await electronic.create({
       ...this.product_attributes,
       product_shop: this.product_shop
@@ -93,5 +94,26 @@ class Electronic extends Product {
   }
 }
 
+//define sub-class for product cosmetic field
+class Cosmetic extends Product {
+  async createProduct() {
+    const newCosmetic = await cosmetic.create({
+      ...this.product_attributes,
+      product_shop: this.product_shop
+    })
+    if (!newCosmetic) throw new InternalServerErrorRequestResponse('Something went wrong ! Please try again.')
+
+    const newProduct = await super.createProduct(newCosmetic._id)
+    if (!newProduct) throw new InternalServerErrorRequestResponse('Something went wrong ! Please try again.')
+
+    return newProduct
+  }
+}
+
+
+//Register product type
+ProductFactory.registerProductType('Electronic', Electronic)
+ProductFactory.registerProductType('Clothing', Clothing)
+ProductFactory.registerProductType('Cosmetic', Cosmetic)
 
 module.exports = ProductFactory

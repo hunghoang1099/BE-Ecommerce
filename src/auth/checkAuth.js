@@ -18,7 +18,6 @@ const apiKey = async (req, res, next) => {
 
     //Check key
     const objKey = await findKey(key)
-    // console.log(objKey)
     if (!objKey) {
       return res.status(403).json({
         statusCode: 403,
