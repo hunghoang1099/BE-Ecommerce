@@ -35,7 +35,7 @@ const productSchema = new Schema({
   },
   product_shop: {
     type: String,
-    ref: 'Shops',
+    ref: 'Shop',
     required: true,
   },
   product_attributes: {
@@ -54,7 +54,7 @@ const productSchema = new Schema({
     type: Array,
     default: []
   },
-  isDraff: {
+  isDraft: {
     type: Boolean,
     default: true,
     index: true,
@@ -70,6 +70,10 @@ const productSchema = new Schema({
   collection: COLLECTION_NAME,
   timestamps: true
 })
+
+//Create index for search 
+productSchema.index({product_name: 'text', product_description: 'text'})
+
 
 // Document middleware: run befor document .save(), .create()...
 productSchema.pre('save', function(next) {
@@ -159,5 +163,5 @@ module.exports = {
   clothing: model('Clothings', clothingSchema),
   electronic: model('Electronics', electronicSchema),
   cosmetic: model('Cosmetics', cosmeticSchema),
-  funiture: model('Furniture', furnitureSchema)
+  furniture: model('Furniture', furnitureSchema)
 }
