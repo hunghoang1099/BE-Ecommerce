@@ -1,7 +1,7 @@
 'use strict';
 
 const { BadRequestRequestErrorResponse, InternalServerErrorRequestResponse } = require('../core/error.response');
-const { product, clothing, electronic, cosmetic } = require('../models/product.model')
+const { product, clothing, electronic, cosmetic, funiture } = require('../models/product.model')
 
 class ProductFactory {
 
@@ -110,10 +110,27 @@ class Cosmetic extends Product {
   }
 }
 
+//define sub-class for product funiture field
+class Furniture extends Product {
+  async createProduct() {
+    const newFuniture = await funiture.create({
+      ...this.product_attributes,
+      product_shop: this.product_shop
+    })
+    if (!newFuniture) throw new InternalServerErrorRequestResponse('Something went wrong ! Please try again.')
+
+    const newProduct = await super.createProduct(newFuniture._id)
+    if (!newProduct) throw new InternalServerErrorRequestResponse('Something went wrong ! Please try again.')
+
+    return newProduct
+  }
+}
+
 
 //Register product type
 ProductFactory.registerProductType('Electronic', Electronic)
 ProductFactory.registerProductType('Clothing', Clothing)
 ProductFactory.registerProductType('Cosmetic', Cosmetic)
+ProductFactory.registerProductType('Furniture', Furniture)
 
 module.exports = ProductFactory
