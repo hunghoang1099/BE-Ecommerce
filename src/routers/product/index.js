@@ -7,6 +7,9 @@ const { asyncHandler } = require('../../helpers/asyncHandler');
 const { authentication } = require('../../auth/authUtils');
 
 
+//get all products
+router.get('', asyncHandler(ProductController.getAllProduct))
+
 //get list products draft
 router.get('/search/:keySearch', asyncHandler(ProductController.getListSearchProduct))
 

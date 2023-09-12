@@ -39,6 +39,13 @@ class ProductController {
     }).send(res);
   };
 
+  getAllProduct = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "Get list product success.",
+      metaData: await ProductServiceV2.findAllProduct(req.query),
+    }).send(res);
+  };
+
   publishProductByShop = async (req, res, next) => {
     return new SuccessResponse({
       message: "Publish product draft success.",
