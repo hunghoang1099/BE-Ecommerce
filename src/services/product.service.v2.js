@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const {
   BadRequestRequestErrorResponse,
@@ -17,7 +17,8 @@ const {
   findAllProductPublishForShop,
   findOneAndUnPublishProduct,
   searchProductByUser,
-  findAllProduct
+  findAllProduct,
+  findProduct,
 } = require('../models/repositories/product.repo');
 
 class ProductFactory {
@@ -39,39 +40,58 @@ class ProductFactory {
     return new productClass(payload).createProduct();
   }
 
-  static async findAllProductDraftForShop({ product_shop, limit = 50, skip = 0 }) {
+  static async findAllProductDraftForShop({
+    product_shop,
+    limit = 50,
+    skip = 0,
+  }) {
     const query = { product_shop, isDraft: true };
-    return await findAllProductDraftForShop({query, limit, skip})
+    return await findAllProductDraftForShop({ query, limit, skip });
   }
 
-  static async findAllProductPublishForShop({ product_shop, limit = 50, skip = 0 }) {
+  static async findAllProductPublishForShop({
+    product_shop,
+    limit = 50,
+    skip = 0,
+  }) {
     const query = { product_shop, isPublished: true };
-    return await findAllProductPublishForShop({query, limit, skip})
+    return await findAllProductPublishForShop({ query, limit, skip });
   }
 
-  static async publishProductByShop({ product_shop, product_id}) {
-    return await findOneAndPublishProduct({product_shop, product_id})
+  static async publishProductByShop({ product_shop, product_id }) {
+    return await findOneAndPublishProduct({ product_shop, product_id });
   }
 
-  static async unPublishProductByShop({ product_shop, product_id}) {
-    return await findOneAndUnPublishProduct({product_shop, product_id})
+  static async unPublishProductByShop({ product_shop, product_id }) {
+    return await findOneAndUnPublishProduct({ product_shop, product_id });
   }
 
   static async searchProduct({ keySearch }) {
-    return await searchProductByUser({ keySearch })
+    return await searchProductByUser({ keySearch });
   }
 
-  static async findAllProduct({ limit = 50, sort='ctime', page = 1, filter = {isPublished: true } }) {
-    const select = ['product_name', 'product_price', 'product_quantity', 'product_description']
-    return await findAllProduct({ limit , sort, page, filter, select})
+  static async findAllProduct({
+    limit = 50,
+    sort = 'ctime',
+    page = 1,
+    filter = { isPublished: true },
+  }) {
+    const select = [
+      'product_name',
+      'product_price',
+      'product_quantity',
+      'product_description',
+    ];
+    return await findAllProduct({ limit, sort, page, filter, select });
   }
 
-  static async findProduct({ keySearch }) {
-    return await searchProductByUser({ keySearch })
+  static async findProduct({ product_id }) {
+    const unSelect = ['__v', 'product_slug'];
+    return await findProduct({ product_id, unSelect });
   }
 
   static async updateProduct({ keySearch }) {
-    return await searchProductByUser({ keySearch })
+    return await searchProductByUser({ keySearch });
   }
 }
 
@@ -122,13 +142,13 @@ class Clothing extends Product {
     });
     if (!newClothing)
       throw new InternalServerErrorRequestResponse(
-        "Something went wrong ! Please try again."
+        'Something went wrong ! Please try again.'
       );
 
     const newProduct = await super.createProduct(newClothing._id);
     if (!newProduct)
       throw new InternalServerErrorRequestResponse(
-        "Something went wrong ! Please try again."
+        'Something went wrong ! Please try again.'
       );
 
     return newProduct;
@@ -144,13 +164,13 @@ class Electronic extends Product {
     });
     if (!newElectronic)
       throw new InternalServerErrorRequestResponse(
-        "Something went wrong ! Please try again."
+        'Something went wrong ! Please try again.'
       );
 
     const newProduct = await super.createProduct(newElectronic._id);
     if (!newProduct)
       throw new InternalServerErrorRequestResponse(
-        "Something went wrong ! Please try again."
+        'Something went wrong ! Please try again.'
       );
 
     return newProduct;
@@ -166,13 +186,13 @@ class Cosmetic extends Product {
     });
     if (!newCosmetic)
       throw new InternalServerErrorRequestResponse(
-        "Something went wrong ! Please try again."
+        'Something went wrong ! Please try again.'
       );
 
     const newProduct = await super.createProduct(newCosmetic._id);
     if (!newProduct)
       throw new InternalServerErrorRequestResponse(
-        "Something went wrong ! Please try again."
+        'Something went wrong ! Please try again.'
       );
 
     return newProduct;
@@ -188,13 +208,13 @@ class Furniture extends Product {
     });
     if (!newFuniture)
       throw new InternalServerErrorRequestResponse(
-        "Something went wrong ! Please try again."
+        'Something went wrong ! Please try again.'
       );
 
     const newProduct = await super.createProduct(newFuniture._id);
     if (!newProduct)
       throw new InternalServerErrorRequestResponse(
-        "Something went wrong ! Please try again."
+        'Something went wrong ! Please try again.'
       );
 
     return newProduct;
@@ -202,9 +222,9 @@ class Furniture extends Product {
 }
 
 //Register product type
-ProductFactory.registerProductType("Electronic", Electronic);
-ProductFactory.registerProductType("Clothing", Clothing);
-ProductFactory.registerProductType("Cosmetic", Cosmetic);
-ProductFactory.registerProductType("Furniture", Furniture);
+ProductFactory.registerProductType('Electronic', Electronic);
+ProductFactory.registerProductType('Clothing', Clothing);
+ProductFactory.registerProductType('Cosmetic', Cosmetic);
+ProductFactory.registerProductType('Furniture', Furniture);
 
 module.exports = ProductFactory;

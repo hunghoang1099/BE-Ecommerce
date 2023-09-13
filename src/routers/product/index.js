@@ -10,6 +10,9 @@ const { authentication } = require('../../auth/authUtils');
 //get all products
 router.get('', asyncHandler(ProductController.getAllProduct))
 
+//get products
+router.get('/:id', asyncHandler(ProductController.getProduct))
+
 //get list products draft
 router.get('/search/:keySearch', asyncHandler(ProductController.getListSearchProduct))
 
