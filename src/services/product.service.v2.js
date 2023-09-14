@@ -11,6 +11,7 @@ const {
   cosmetic,
   furniture,
 } = require('../models/product.model');
+const { insertInventory } = require('../models/repositories/inventory.repo');
 const {
   findAllProductDraftForShop,
   findOneAndPublishProduct,
@@ -19,7 +20,9 @@ const {
   searchProductByUser,
   findAllProduct,
   findProduct,
+  findProductByIdAndUpdate,
 } = require('../models/repositories/product.repo');
+const { removeUndefinedObject, updateNestedObjectParser } = require('../utils');
 
 class ProductFactory {
   /*
@@ -32,12 +35,20 @@ class ProductFactory {
     ProductFactory.productRegistry[type] = classRef;
   }
 
-  static createProduct(type, payload) {
+  static async createProduct(type, payload) {
     const productClass = ProductFactory.productRegistry[type];
     if (!productClass)
       throw new BadRequestRequestErrorResponse(`Invalid product type: ${type}`);
 
     return new productClass(payload).createProduct();
+  }
+
+  static async findProductAndUpdate(type, id, payload) {
+    const productClass = ProductFactory.productRegistry[type];
+    if (!productClass)
+      throw new BadRequestRequestErrorResponse(`Invalid product type: ${type}`);
+
+    return new productClass(payload).updateProduct(id);
   }
 
   static async findAllProductDraftForShop({
@@ -89,10 +100,6 @@ class ProductFactory {
     const unSelect = ['__v', 'product_slug'];
     return await findProduct({ product_id, unSelect });
   }
-
-  static async updateProduct({ keySearch }) {
-    return await searchProductByUser({ keySearch });
-  }
 }
 
 /*
@@ -129,7 +136,25 @@ class Product {
 
   //create new product
   async createProduct(productId) {
-    return await product.create({ ...this, _id: productId });
+    const newProduct = await product.create({ ...this, _id: productId });
+    if(newProduct) {
+      //add product_stock to inventory collection
+      await insertInventory({
+        productId: newProduct._id,
+        shopId: this.product_shop,
+        stock: this.product_quantity
+      })
+    }
+    return newProduct;
+  }
+
+  //update product
+  async updateProduct(productId, payload, model = product) {
+    return await findProductByIdAndUpdate({
+      product_id: productId,
+      payload,
+      model,
+    });
   }
 }
 
@@ -153,6 +178,20 @@ class Clothing extends Product {
 
     return newProduct;
   }
+
+  async updateProduct(product_id) {
+    const payload = removeUndefinedObject(this);
+    if (payload.product_attributes) {
+      await findProductByIdAndUpdate({
+        product_id,
+        payload: updateNestedObjectParser(payload.product_attributes),
+        model: clothing,
+      });
+    }
+
+    const updateProduct = await super.updateProduct(product_id, updateNestedObjectParser(payload));
+    return updateProduct;
+  }
 }
 
 //define sub-class for product electronic field
@@ -174,6 +213,20 @@ class Electronic extends Product {
       );
 
     return newProduct;
+  }
+
+  async updateProduct(product_id) {
+    const payload = removeUndefinedObject(this);
+    if (payload.product_attributes) {
+      await findProductByIdAndUpdate({
+        product_id,
+        payload: updateNestedObjectParser(payload.product_attributes),
+        model: electronic,
+      });
+    }
+
+    const updateProduct = await super.updateProduct(product_id, updateNestedObjectParser(payload));
+    return updateProduct;
   }
 }
 
@@ -197,6 +250,20 @@ class Cosmetic extends Product {
 
     return newProduct;
   }
+
+  async updateProduct(product_id) {
+    const payload = removeUndefinedObject(this);
+    if (payload.product_attributes) {
+      await findProductByIdAndUpdate({
+        product_id,
+        payload: updateNestedObjectParser(payload.product_attributes),
+        model: cosmetic,
+      });
+    }
+
+    const updateProduct = await super.updateProduct(product_id, updateNestedObjectParser(payload));
+    return updateProduct;
+  }
 }
 
 //define sub-class for product funiture field
@@ -218,6 +285,20 @@ class Furniture extends Product {
       );
 
     return newProduct;
+  }
+
+  async updateProduct(product_id) {
+    const payload = removeUndefinedObject(this);
+    if (payload.product_attributes) {
+      await findProductByIdAndUpdate({
+        product_id,
+        payload: updateNestedObjectParser(payload.product_attributes),
+        model: furniture,
+      });
+    }
+
+    const updateProduct = await super.updateProduct(product_id, updateNestedObjectParser(payload));
+    return updateProduct;
   }
 }
 

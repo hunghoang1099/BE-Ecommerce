@@ -33,4 +33,7 @@ router.put('/publish/:id', asyncHandler(ProductController.publishProductByShop))
 
 //UnPublish product
 router.put('/unpublish/:id', asyncHandler(ProductController.unPublishProductByShop))
+
+//Update prodcut
+router.patch('/:id', asyncHandler(ProductController.findProductAndUpdate))
 module.exports = router

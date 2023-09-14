@@ -46,7 +46,10 @@ const findAllProduct = async ({ limit, sort, page, filter, select }) => {
 };
 
 const findProduct = async ({ product_id, unSelect }) => {
-  return await product.findById(product_id).select(getUnSelectedField(unSelect)).lean();
+  return await product
+    .findById(product_id)
+    .select(getUnSelectedField(unSelect))
+    .lean();
 };
 
 const queryProduct = async ({ query, limit, skip }) => {
@@ -87,6 +90,19 @@ const findOneAndUnPublishProduct = async ({ product_shop, product_id }) => {
   return modifiedCount;
 };
 
+const findProductByIdAndUpdate = async ({
+  product_id,
+  payload,
+  model,
+  isNew = true,
+}) => {
+  const result = await model.findByIdAndUpdate(product_id, payload, {
+    new: isNew,
+  });
+  
+  return result;
+};
+
 module.exports = {
   findAllProductDraftForShop,
   findOneAndPublishProduct,
@@ -94,5 +110,6 @@ module.exports = {
   findOneAndUnPublishProduct,
   searchProductByUser,
   findAllProduct,
-  findProduct
+  findProduct,
+  findProductByIdAndUpdate
 };
