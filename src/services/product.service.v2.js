@@ -18,7 +18,7 @@ const {
   findAllProductPublishForShop,
   findOneAndUnPublishProduct,
   searchProductByUser,
-  findAllProduct,
+  findAllProducts,
   findProduct,
   findProductByIdAndUpdate,
 } = require('../models/repositories/product.repo');
@@ -81,7 +81,7 @@ class ProductFactory {
     return await searchProductByUser({ keySearch });
   }
 
-  static async findAllProduct({
+  static async findAllProducts({
     limit = 50,
     sort = 'ctime',
     page = 1,
@@ -93,7 +93,7 @@ class ProductFactory {
       'product_quantity',
       'product_description',
     ];
-    return await findAllProduct({ limit, sort, page, filter, select });
+    return await findAllProducts({ limit, sort, page, filter, select });
   }
 
   static async findProduct({ product_id }) {
