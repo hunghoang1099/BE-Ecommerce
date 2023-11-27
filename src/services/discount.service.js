@@ -132,7 +132,7 @@ class DisccountService {
         discount_shopId: convertToObjectId(shopId),
       })
       .lean();
-    
+
     if (!foundDiscount || !foundDiscount.discount_is_active) {
       throw new NotFoundRequestErrorResponse('Discount is not exists');
     }
@@ -222,7 +222,7 @@ class DisccountService {
       discount_end_date,
       discount_max_users_per_use,
       discount_users_used,
-      discount_value
+      discount_value,
     } = foundDiscount;
 
     if (!discount_is_active)
@@ -241,8 +241,7 @@ class DisccountService {
     if (discount_min_order_value > 0) {
       //get total
       totalOrder = products.reduce((acc, product) => {
-        console.log(1,acc, product)
-        return acc + (product.product_quantity * product.product_price);
+        return acc + product.product_quantity * product.product_price;
       }, 0);
 
       if (totalOrder < discount_min_order_value) {

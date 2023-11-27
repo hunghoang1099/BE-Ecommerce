@@ -92,6 +92,7 @@ class ProductFactory {
       'product_price',
       'product_quantity',
       'product_description',
+      'product_shop'
     ];
     return await findAllProducts({ limit, sort, page, filter, select });
   }

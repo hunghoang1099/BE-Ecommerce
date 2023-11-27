@@ -1,7 +1,11 @@
 'use strict';
 
 const { Types } = require('mongoose');
-const { getSelectedField, getUnSelectedField } = require('../../utils');
+const {
+  getSelectedField,
+  getUnSelectedField,
+  convertToObjectId,
+} = require('../../utils');
 const {
   product,
   clothing,
@@ -99,8 +103,27 @@ const findProductByIdAndUpdate = async ({
   const result = await model.findByIdAndUpdate(product_id, payload, {
     new: isNew,
   });
-  
+
   return result;
+};
+
+const findProductById = async (productIs) => {
+  return await product.findOne({ _id: convertToObjectId(productIs) }).lean();
+};
+
+const checkProductByServer = async (products) => {
+  return await Promise.all(
+    products.map(async (product) => {
+      const foundProduct = await findProductById(product.product_id);
+      if (foundProduct) {
+        return {
+          product_price: foundProduct.product_price,
+          product_quantity: product.quantity,
+          productId: product.product_id,
+        };
+      }
+    })
+  );
 };
 
 module.exports = {
@@ -111,5 +134,7 @@ module.exports = {
   searchProductByUser,
   findAllProducts,
   findProduct,
-  findProductByIdAndUpdate
+  findProductByIdAndUpdate,
+  findProductById,
+  checkProductByServer,
 };

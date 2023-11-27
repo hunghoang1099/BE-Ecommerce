@@ -26,7 +26,7 @@ class AccessService {
       //decode to who is what user
       const { userId, email } = await decodeTokeWithJWT(refreshToken, foundToken.privateKey)
       await KeyTokenService.deleteKeyByUserId(userId)
-      throw new ForbiddenRequestErrorResponse('Something went wrong ! Please login again.')
+      throw new ForbiddenRequestErrorResponse('Something went wrong ! Please login again.') 
     }
 
     const holderToken = await KeyTokenService.findRefreshTokenByRefreshToken(refreshToken)

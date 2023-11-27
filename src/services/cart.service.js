@@ -1,5 +1,7 @@
 'use strict';
+const { NotFoundRequestErrorResponse } = require('../core/error.response');
 const { cart } = require('../models/cart.model');
+const { findProductById } = require('../models/repositories/product.repo');
 
 /* 
   Key features: Cart service
@@ -14,7 +16,7 @@ class CartService {
   /// START REPO CART ///
   static async createUserCart({ userId, product }) {
     const query = { cart_userId: userId, cart_state: 'active' };
-    updateOrInsert = {
+    const updateOrInsert = {
       $addToSet: {
         cart_products: product,
       },
@@ -62,4 +64,59 @@ class CartService {
     // If cart already exists and has this product
     return await CartService.updateUserCartQuantity({ userId, product });
   }
+
+  static async addToCartV2({ userId, shopOrderIds }) {
+    const { product_id, quantity, old_quantity } =
+      shopOrderIds[0]?.item_products[0];
+
+    //Check prd
+    const foundProduct = await findProductById(product_id);
+
+    if (!foundProduct)
+      throw new NotFoundRequestErrorResponse('Product not exists!');
+
+    //Compare shopId
+    if (foundProduct.product_shop.toString() !== shopOrderIds[0]?.shopId) {
+      throw new NotFoundRequestErrorResponse(
+        'Product do not belong to the shop!'
+      );
+    }
+
+    if (quantity === 0) {
+      await this.deleteUserCart((userId, product_id));
+    }
+
+    return await CartService.updateUserCartQuantity({
+      userId,
+      product: {
+        product_id,
+        quantity: quantity - old_quantity,
+      },
+    });
+  }
+
+  static async deleteUserCart({ userId, product_id }) {
+    const query = { cart_userId: userId, cart_state: 'active' };
+    const updateSet = {
+      $pull: {
+        cart_products: {
+          product_id,
+        },
+      },
+    };
+
+    const deleteCart = await cart.updateOne(query, updateSet);
+
+    return deleteCart;
+  }
+
+  static async getListUserCart({ userId }) {
+    return await cart
+      .findOne({
+        cart_userId: userId,
+      })
+      .lean();
+  }
 }
+
+module.exports = CartService;
